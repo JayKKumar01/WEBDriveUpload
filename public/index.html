@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Files to Google Drive</title>
+</head>
+<body>
+  <h1>Upload File to Google Drive</h1>
+
+  <!-- Form for uploading credentials.json -->
+  <form id="credentials-form" action="/upload-credentials" method="POST" enctype="multipart/form-data">
+    <label for="credentials">Choose Google Drive JSON credentials file:</label>
+    <input type="file" name="credentials" id="credentials" required>
+    <button type="submit">Upload Credentials</button>
+  </form>
+
+  <br>
+
+  <!-- Form for uploading files after credentials are uploaded -->
+  <form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data" style="display: none;">
+    <label for="file">Choose file to upload:</label>
+    <input type="file" name="file" id="file" required>
+    <button type="submit">Upload File</button>
+  </form>
+
+  <script>
+    const credentialsForm = document.getElementById('credentials-form');
+    const uploadForm = document.getElementById('upload-form');
+    
+    credentialsForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(credentialsForm);
+      const response = await fetch('/upload-credentials', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        alert('Credentials uploaded successfully!');
+        uploadForm.style.display = 'block'; // Show the file upload form
+      } else {
+        alert('Error uploading credentials');
+      }
+    });
+
+    uploadForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(uploadForm);
+      const response = await fetch('/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const message = await response.text();
+        alert(message);
+      } else {
+        alert('Error uploading file');
+      }
+    });
+  </script>
+</body>
+</html>
